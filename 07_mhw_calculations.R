@@ -32,7 +32,9 @@ read_ncdf('data/stt_med_all.nc',
   ) %>%
   st_drop_geometry() %>%
   as_tibble() %>% 
-  mutate(analysed_sst = analysed_sst -273.15)
+  mutate(analysed_sst = analysed_sst -273.15) %>% 
+  group_by(time, name, farm_code) %>% 
+  summarise(analysed_sst = mean(analysed_sst))
 
 # nest data and calculate climatology and MHW events--------------
 ts_nest <-
@@ -132,7 +134,7 @@ ggplot(data =  clima_d_latest , aes(x = t)) +
                                "top" = "red")) +
   scale_x_date(date_labels = "%b %Y") +
   guides(colour = guide_legend(override.aes = list(fill = NA))) +
-  labs(y = expression(paste("Temperature [", degree, "C]")), x = NULL) +
+  labs(y = expression(paste("Temperature (", degree, "C)")), x = NULL) +
   theme_minimal() +
   facet_wrap(~farm_code, ncol = 1, scales = 'fixed')
 
@@ -160,7 +162,18 @@ event_d %>%
             max_duration = max(duration))
 
 
+skimr::skim(event_d)
+
 event_d %>% 
-  filter(between(date_peak, as_date("2021-01-01"), as_date("2023-01-01"))) %>% 
+  group_by(decade = floor_date(date_peak, years(10))) %>%
   filter(duration == max(duration)) %>% 
-  select(duration, farm_code)
+  select(duration, farm_code, contains('date')) %>% 
+  arrange(decade)
+
+
+# summer 2022 MHW---
+event_d %>% 
+filter(date_start>as_date("2022-01-01")) %>%
+  group_by(farm_code) %>% 
+  filter(duration == max(duration)) %>% 
+  arrange(farm_code) %>% summary
