@@ -177,4 +177,7 @@ filter(date_start>as_date("2022-01-01")) %>%
   group_by(farm_code) %>% 
   filter(duration == max(duration)) %>% 
   arrange(farm_code) %>% summary
+<<<<<<< HEAD
 
+=======
+>>>>>>> a8b7bdc939ac015a1dea8eefe603bcd6ee3c3e63
