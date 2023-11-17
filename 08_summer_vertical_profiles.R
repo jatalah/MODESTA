@@ -93,10 +93,10 @@ print(plot_22)
 
 ggsave(
   plot_22,
-  filename = 'figures/profiles_2022.png',
+  filename = 'figures/figure_5.svg',
   width = 7 ,
   height = 7,
-  dpi = 150, 
+  dpi = 600, 
   bg = 'white'
 )
 
@@ -113,7 +113,6 @@ ggsave(
 #   dpi = 150, 
 #   bg = 'white'
 # )
-
 
 dat_22 %>%
   group_by(farm_code, jday = round(x, 0), y) %>%

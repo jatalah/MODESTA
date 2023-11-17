@@ -228,7 +228,7 @@ figure_trends
 
 ggsave(
   figure_trends,
-  filename = 'figures/ts_trends_plots.png',
+  filename = 'figures/figure2_ts_trends_plots.svg',
   width = 7,
   height = 6,
   dpi = 300,

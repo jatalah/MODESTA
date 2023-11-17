@@ -10,7 +10,13 @@ theme_set(theme_minimal())
 sf_use_s2(FALSE)
 
 # library(rnaturalearth)
-bbox <- st_bbox(c(xmin = -1.65, ymin = 37.2,  xmax = 0.2, ymax = 38.65), crs = st_crs(4326))
+bbox <-
+  st_bbox(c(
+    xmin = -1.65,
+    ymin = 37.2,
+    xmax = 0.2,
+    ymax = 38.65
+  ), crs = st_crs(4326))
 recintos_buffer <- st_read('data/recintos_buffer.shp')
 
 farm_centroids_sf <- 
@@ -18,19 +24,17 @@ farm_centroids_sf <-
     rename(farm_code = farm_cd,
            distance_to_coast = dstnc__)
 
-
 costa <- 
   read_sf('data/CCAA/Comunidades_Autonomas_ETRS89_30N.shp') %>% 
   st_transform(crs = st_crs(4326)) %>% 
   st_union() %>% 
   st_crop(bbox)
 
-# function to read anbd calculate sens slopes----
+# function to read and calculate sens slopes----
 trend_func <- function(path) {
   read_ncdf(path,
             var = 'thetao',
             make_units = F) %>%
-    filter(depth = min(depth)) %>%
     filter(month(time) == 8) %>%
     as_tibble() %>%
     drop_na() %>%
@@ -45,6 +49,7 @@ trend_func <- function(path) {
     unnest(cols = c('sen')) %>%
     ungroup()
 }
+
 
 # apply function to each strata---------
 d_sen_surface <- trend_func(path = 'data/thetao_1987_2020_0_10m.nc')
@@ -170,7 +175,7 @@ map_sen
 # save plot------
 ggsave(
   map_sen,
-  filename = 'figures/august_thetao_send_trends_plot.png',
+  filename = 'figures/figure_3.svg',
   width = 4,
   height = 4,
   dpi = 600,

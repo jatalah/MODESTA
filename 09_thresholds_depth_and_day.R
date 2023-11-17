@@ -5,6 +5,7 @@ library(ggpubr)
 library(skimr)
 library(ggpmisc)
 library(broom)
+library(trend)
 sf_use_s2(FALSE)
 
 load('depth_at_25.RData')
@@ -178,7 +179,7 @@ plot_day <-
   day_d %>%
   ggplot(aes(year, day, color = Thr)) +
   geom_line(alpha = .5, linewidth = .5) +
-  geom_smooth(se = F , linewidth = .25, method = 'lm')  +
+  geom_smooth(se = F , linewidth = .25)  +
   facet_wrap( ~ farm_code, ncol = 1) +
   theme_minimal(base_size = 8) +
   scale_color_economist(name = NULL) +
@@ -188,7 +189,7 @@ plot_day <-
 plot_day
 
 
-# save both plot together------
+# Figure 6 save both plot together------
 ggarrange(plot_depth,
           plot_day,
           ncol = 2,
@@ -196,7 +197,7 @@ ggarrange(plot_depth,
 
 ggsave(
   last_plot(),
-  filename = 'figures/depth_thresholds_plot.png',
+  filename = 'figures/figure6_depth_thresholds_plot.svg',
   width = 4,
   height = 7,
   dpi = 300,
@@ -208,7 +209,7 @@ ggsave(
 depth_d %>%
   group_by(Thr, farm_code) %>% 
   nest() %>%
-  mutate(sen = map(data, ~ er.helpers::sen_slope(.x$depth))) %>%
+  mutate(sen = map(data, ~ er.helpers::sen_slope(.x$depth*10))) %>%
   dplyr::select(sen) %>%
   unnest(cols = c('sen')) %>%
   ungroup()
@@ -216,7 +217,7 @@ depth_d %>%
 day_d %>%
   group_by(Thr, farm_code) %>% 
   nest() %>%
-  mutate(sen = map(data, ~ er.helpers::sen_slope(.x$day))) %>%
+  mutate(sen = map(data, ~ er.helpers::sen_slope(.x$day*10))) %>%
   dplyr::select(sen) %>%
   unnest(cols = c('sen')) %>%
   ungroup()
